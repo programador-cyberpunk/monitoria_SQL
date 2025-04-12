@@ -1,76 +1,65 @@
+-- Criação do banco de dados e uso
+CREATE DATABASE BancoDemo2;
+USE BancoDemo2;
 
-CREATE DATABASE BancoDemo;
-USE BancoDemo;
-
-
+-- Criação da tabela1
 CREATE TABLE tabela1 (
     id INT AUTO_INCREMENT PRIMARY KEY,
     coluna1 VARCHAR(50) NOT NULL
 );
 
-
+-- Criação da tabela2 com chave estrangeira
 CREATE TABLE tabela2 (
     id INT NOT NULL,
     coluna2 VARCHAR(50) NOT NULL,
     FOREIGN KEY (id) REFERENCES tabela1(id)
 );
 
+-- Criação da tabela projetos
+CREATE TABLE projetos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    data DATE NOT NULL
+);
 
+-- Criação da tabela comentarios
+CREATE TABLE comentarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_projeto INT NOT NULL,
+    texto VARCHAR(255) NOT NULL,
+    FOREIGN KEY (id_projeto) REFERENCES projetos(id)
+);
+
+-- Criação da tabela likes_por_projeto (opcional, se necessário)
+CREATE TABLE likes_por_projeto (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_projeto INT NOT NULL,
+    FOREIGN KEY (id_projeto) REFERENCES projetos(id)
+);
+
+-- Inserção de dados na tabela1
 INSERT INTO tabela1 (coluna1) VALUES ('ValorA'), ('ValorB'), ('ValorC');
 
-
+-- Inserção de dados na tabela2
 INSERT INTO tabela2 (id, coluna2) VALUES (1, 'ValorA'), (2, 'ValorD'), (3, 'ValorB');
 
+-- Inserção de dados na tabela projetos
+INSERT INTO projetos (titulo, data) VALUES ('Projeto 1', '2023-01-01'), ('Projeto 2', '2023-01-02'), ('Projeto 3', '2023-01-03');
 
-/* essa eh a primeira tecnica, usar a subquery como uma nova coluna*/
+-- Inserção de dados na tabela comentarios
+INSERT INTO comentarios (id_projeto, texto) VALUES (1, 'Comentário 1 para Projeto 1'), (1, 'Comentário 2 para Projeto 1'), (2, 'Comentário 1 para Projeto 2');
+
+-- Primeira técnica: subquery como nova coluna
 SELECT
-    *
+    T.id,
+    T.coluna1,
+    (SELECT COUNT(C.id_projeto)
+     FROM comentarios C
+     WHERE C.id_projeto = T.id) AS Quantidade_Comentarios
 FROM
-    tabela1 AS T
-WHERE
-    coluna1 IN
-    (
-        SELECT
-            coluna2
-        FROM
-            tabela2 AS T2
-        WHERE
-            T.id = T2.id
-    );
-    
-    SELECT
-    P.titulo,
-    (SELECT
-        COUNT(C.id_projeto)
-      FROM
-        comentarios C
-      WHERE
-        C.id_projeto = P.id ) AS Quantidade_Comentarios
-FROM
-    projetos P
-GROUP BY
-    P.id;
-    
-    SELECT
-    P.titulo,
-    (SELECT
-        COUNT(C.id_projeto)
-    FROM
-        comentarios C
-    WHERE
-        C.id_projeto = P.id ) AS Quantidade_Comentarios,
-        (SELECT
-            COUNT(LP.id_projeto)
-        FROM
-            likes_por_projeto LP
-        WHERE
-            LP.id_projeto = P.id ) AS Quantidade_Likes
-FROM
-    projetos P
-GROUP BY
-    P.id;
-    /* segunda, usar filtro de consulta, usando comandos de comparação e a palavra reservada IN e EXISTS*/
+    tabela1 T;
 
+-- Segunda técnica: filtro de consulta usando EXISTS
 SELECT
     P.id,
     P.titulo,
@@ -78,75 +67,25 @@ SELECT
 FROM
     projetos P
 WHERE
-    P.id IN
-    (
-        SELECT
-            C.id_projeto
-        FROM
-            comentarios C
-        WHERE
-            P.id = C.id_projeto
+    EXISTS (
+        SELECT C.id_projeto
+        FROM comentarios C
+        WHERE P.id = C.id_projeto
     );
-    /* ainda fazendo a consulta,mas agora vendo se ja existe o elemento na tabela*/
-    SELECT
-    P.id,
-    P.titulo,
-    P.data
-FROM
-    projetos P
-WHERE
-    EXISTS
-    (
-        SELECT
-            C.id_projeto
-        FROM
-            comentarios C
-        WHERE
-            P.id = C.id_projeto
-    );
-    
-    /* usando de um metodo logico agora*/
-    SELECT
-    P.titulo,
-    P.data
-FROM
-    projetos P
-WHERE
-    P.id = (SELECT
-      MAX(LP.id_projeto)
-    FROM
-      likes_por_projeto LP);
-      
-      /* terceiro modo, usando a tabela fonte de dados para a consulta principal*/
-      
-      SELECT
-    P.id,
-    P.titulo,
-    (SELECT
-        COUNT(C.id_projeto)
-    FROM
-        comentarios C
-    WHERE
-        C.id_projeto = P.id ) AS Quantidade_Comentarios
-FROM
-    projetos P;
-  /* usando como base de dados a query acima, no caso para caçar a quantidade 
-  comentarios maiores que 2*/  
-    SELECT
+
+-- Terceira técnica: filtrando projetos com mais de 2 comentários
+SELECT
     F.titulo,
     F.Quantidade_Comentarios
-FROM
-    (SELECT
+FROM (
+    SELECT
         P.id,
         P.titulo,
-        (SELECT
-            COUNT(C.id_projeto)
-        FROM
-            comentarios C
-        WHERE
-            C.id_projeto = P.id ) AS Quantidade_Comentarios
-FROM
-    projetos P
-) as F
+        (SELECT COUNT(C.id_projeto)
+         FROM comentarios C
+         WHERE C.id_projeto = P.id) AS Quantidade_Comentarios
+    FROM
+        projetos P
+) AS F
 WHERE
     F.Quantidade_Comentarios > 2;
