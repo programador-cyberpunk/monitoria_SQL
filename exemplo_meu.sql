@@ -29,6 +29,25 @@ email VARCHAR(200),
 telefone VARCHAR(15)
 );
 
+-- Tabela de log para inserir os disco
+CREATE TABLE log_insercoes_disco (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_disco INT,
+    data_insercao DATETIME,
+    codigo_compra VARCHAR(300)
+);
+
+
+
+-- Tabela de log para alterações de artista
+CREATE TABLE log_alteracoes_artista (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_catalogo INT,
+    data_alteracao DATETIME,
+    artista_antigo VARCHAR(200),
+    artista_novo VARCHAR(200)
+);
+
 INSERT INTO catalogo (artista, genero, titulo, lancamento) VALUES
 ('Nirvana', 'Rock', 'Nevermind', 1991),
 ('Queen', 'Rock', 'A Night at the Opera', 1975),

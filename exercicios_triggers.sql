@@ -56,10 +56,10 @@ CREATE TRIGGER trg_atualiza_genero_catalogo
 BEFORE UPDATE ON catalogo
 FOR EACH ROW
 BEGIN
-    IF OLD.genero <> NEW.genero THEN
+IF OLD.genero <> NEW.genero THEN
         -- Placeholder para futuras atualizações
         -- Por exemplo: INSERT INTO log_alteracoes_genero (...)
-    END IF;
+END IF;
 END$$
 
 -- 7. Criar tabela para armazenar a contagem de discos por artista
@@ -149,4 +149,97 @@ BEGIN
 END$$
 
 -- Restaurando o delimitador padrão
+
+-- 13 crie um trigger que insira a data de inserçao na tabela log_insercoes_disco sempe que um disco fo atualizado
+CREATE TRIGGER  trg_log_atualiza_disco
+AFTER UPDATE ON disco
+FOR EACH ROW
+ BEGIN
+   INSERT INTO log_insercoes_disco (id_disco, data_insercao, codigo_compra)
+    VALUES (NEW.id, NOW(), NEW.codigo_compra);
+    END$$
+    
+   -- 14 crie um trigger que garanta que não exista um artista com valor vazio ou nulo
+   CREATE TRIGGER trg_valida_artista_nao_vazio
+   BEFORE INSERT ON catalogo
+   FOR EACH ROW
+    BEGIN
+    IF TRIM(NEW.artista) = '' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Nome do artista não pode ser vazio';
+    END IF;
+    END$$
+    
+    -- 15 crie um trigger que formate o nome do cliente para letras maiusculas quando novos registros sao inseridos na tabela cliente
+    CREATE TRIGGER trg_letramaiuscula_nome_cliente
+    BEFORE INSERT ON cliente
+    FOR EACH ROW
+     BEGIN
+     SET NEW.nome = UPER(NEW.nome);
+     END$$
+
+ -- 16 crie uma tabela log para que registrar a exclusao de clientes e um trigger que registre nessa tabela que registre a exclusao
+ CREATE TABLE excluidos(
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  id_cliente INT,
+  data_exclusao DATETIME,
+  nome_cliente VARCHAR(200),
+   FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
+ );
+  CREATE TRIGGER trg_log_exclusao
+  AFTER DELETE ON cliente
+  FOR EACH ROW
+   BEGIN
+    INSERT INTO log_exclusao_cliente (id_cliente, data_exclusao, nome_cliente)
+    VALUES (OLD.id_cliente, NOW(), OLD.nome);
+END$$
+
+-- 17 crie um tigger que impeça a inserão de um codigo de barras duplicado
+ CREATE TRIGGER trg_codigo_duplicado
+ BEFORE INSERT ON disco
+  FOR EACH ROW
+   BEGIN
+      IF EXISTS (SELECT 1 FROM disco WHERE codigo_compra = NEW.codigo_compra) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Código de compra já cadastrado';
+    END IF;
+    END $$
+    
+ -- 18 crie um trigger que atualiza a data de um disco para a data atual sempre que o um disco for alterado
+  CREATE TRIGGER trg_data_atualiza
+  BEFORE UPDATE ON catalogo
+  FOR EACH ROW
+   BEGIN
+     IF OLD.titulo <> NEW.titulo THEN
+        SET NEW.lancamento = YEAR(NOW());
+    END IF;
+END$$
+
+-- 19 crie uma tabela que registre o contato dos funcionarios e um trigger que insira um registro nela sempre que for atualizado
+
+CREATE TABLE log_alteracao_contato_funcionario (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_funcionario INT,
+    data_alteracao DATETIME,
+    contato_antigo VARCHAR(200),
+    contato_novo VARCHAR(200),
+    FOREIGN KEY (id_funcionario) REFERENCES funcionario(id_funcionario)
+);
+
+CREATE TRIGGER trg_log_alteracao_contato
+BEFORE UPDATE ON funcionario
+FOR EACH ROW
+BEGIN
+    IF OLD.contato <> NEW.contato THEN
+        INSERT INTO log_alteracao_contato_funcionario (id_funcionario, data_alteracao, contato_antigo, contato_novo)
+        VALUES (OLD.id_funcionario, NOW(), OLD.contato, NEW.contato);
+    END IF;
+END$$
+-- 20 crie um trigger que impeça a inserçao de um ano de lançamento negativao
+CREATE TRIGGER trg_ano_nao_negativo
+BEFORE INSERT ON catalogo
+ FOR EACH ROW
+  BEGIN
+  IF NEW.lancamento < 0 THEN
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = "Ano de lançemento invalido";
+      END IF;
+  END$$;    
 DELIMITER ;
