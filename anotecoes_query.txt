@@ -1,0 +1,25 @@
+SQL funciona de forma não processual, vc deve dizer o que fazer pra funcionar por via de consultas.
+A consulta serve para extrair e manipuar determinadas informações do banco e especificavam o que vai aparecer na tela
+ quando for executada.
+As consultas se dividem em dois tipos
+DDL - Linguagem de definição de dados, que são instruçoes para definir,descrever ou criar objetos
+no banco de dados (o famoso CRUD)
+os comandos são: 
+CREATE -> cria
+ALTER ->altera umas parada acresenta ou deleta coisas
+DROP -> exclui o objeto do banco
+TRUNCATE -> exclui os registros da tabela
+COMMENT -> adiciona um comentarios
+RENAME -> renomeia oras
+
+Serve para quem trabalha diretamente com tabelas e comandos de consulta,então é ideial para
+programadores mais chão de fábrica ou que precisam de um dado x
+
+DML - Linguagem de manipulação de dados são instruções de dados para gerenciar informaçoes
+do banco de dados e permitem consultar,inserir ,modificar ou excluir informações armazenadas
+nestes objetos, alguns coandos são:
+INSERT -> insere coisas
+UPDATE -> modifica e altera os valores dentro dos campos
+DELETE -> exclui os bagulhos
+SELECT -> pega determinado registro de acordo com algum criterio estabelecido com o usuario
+
