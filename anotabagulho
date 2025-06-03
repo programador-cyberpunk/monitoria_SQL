@@ -1,0 +1,31 @@
+Stored procedure
+
+significa Procedimento armazenado, é um conjunto de comandos em sql
+que pode ser executado de uma vez como uma função, o que ele faz é 
+armazenar uma porrada de tarefa repetitiva, aceita parametros para elas sejam
+executadas de acordo com a necessidade de cada uma.
+
+
+as vantagens de usar essa porra:
+
+reduz o trafico de rede, melhora a performance do banco, diminui riscos,
+cria rotinas de processamento,cria tarefas agendadas etc.
+
+existem 5 tipos procedures basicoes
+
+procedimentos locais - que vc cria a apartir de dados do proprio usuario;
+
+temporario - procedimentos estes que se dividem em dois:
+locais e globais os locais começam com # e globais ##
+
+procedimentos de sistema - são armazenados no banco padrão do SQL Serve,ou seje no Master
+, da pra identificar eles com as siglas sp, que vemde stored procedure, esses
+executavam tarefas administrativas e da pra executar a partir de qualquer banco
+
+procedimentos remotos - podem usar querys distribuidas por essas procedures,são usadas apenas para compatibilidade
+
+ procedimentos extendidos -  diferente do anterior,esse recebe a extensão
+ .dll e são executados fora SQL Server e vc identifica pelo prefixo xp.
+ 
+ 
+ https://www.devmedia.com.br/introducao-aos-stored-procedures-no-sql-server/7904
