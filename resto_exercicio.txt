@@ -1,0 +1,102 @@
+
+13. Contar Clientes por Domínio de Email
+sql
+Run
+Copy code
+DELIMITER //
+CREATE PROCEDURE ContarClientesPorDominio(
+    IN p_dominio VARCHAR(100)
+)
+BEGIN
+    SELECT COUNT(*) AS total_clientes 
+    FROM cliente 
+    WHERE email LIKE CONCAT('%', p_dominio);
+END //
+DELIMITER ;
+14. Listar Discos e Artistas
+sql
+Run
+Copy code
+DELIMITER //
+CREATE PROCEDURE ListarDiscosEArtistas()
+BEGIN
+    SELECT d.*, c.artista 
+    FROM disco d 
+    JOIN catalogo c ON d.id_catalogo = c.id;
+END //
+DELIMITER ;
+15. Buscar Disco por Título
+sql
+Run
+Copy code
+DELIMITER //
+CREATE PROCEDURE BuscarDiscoPorTitulo(
+    IN p_titulo VARCHAR(200)
+)
+BEGIN
+    SELECT * FROM catalogo WHERE titulo = p_titulo;
+END //
+DELIMITER ;
+16. Atualizar Gênero do Disco
+sql
+Run
+Copy code
+DELIMITER //
+CREATE PROCEDURE AtualizarGeneroDisco(
+    IN p_id_disco INT,
+    IN p_novo_genero VARCHAR(200)
+)
+BEGIN
+    UPDATE catalogo SET genero = p_novo_genero WHERE id = (SELECT id_catalogo FROM disco WHERE id = p_id_disco);
+END //
+DELIMITER ;
+17. Listar Discos por Artista e Gênero
+sql
+Run
+Copy code
+DELIMITER //
+CREATE PROCEDURE ListarDiscosPorArtistaEGenero(
+    IN p_artista VARCHAR(200),
+    IN p_genero VARCHAR(200)
+)
+BEGIN
+    SELECT * FROM disco d
+    JOIN catalogo c ON d.id_catalogo = c.id
+    WHERE c.artista = p_artista AND c.genero = p_genero;
+END //
+DELIMITER ;
+18. Contar Discos por Artista
+sql
+Run
+Copy code
+DELIMITER //
+CREATE PROCEDURE ContarDiscosPorArtista()
+BEGIN
+    SELECT c.artista, COUNT(d.id) AS total_discos 
+    FROM catalogo c 
+    LEFT JOIN disco d ON c.id = d.id_catalogo 
+    GROUP BY c.artista;
+END //
+DELIMITER ;
+19. Buscar Funcionário por Nome
+sql
+Run
+Copy code
+DELIMITER //
+CREATE PROCEDURE BuscarFuncionarioPorNome(
+    IN p_nome VARCHAR(200)
+)
+BEGIN
+    SELECT * FROM funcionario WHERE nome LIKE CONCAT('%', p_nome, '%');
+END //
+DELIMITER ;
+20. Listar Clientes e Seus Telefones
+sql
+Run
+Copy code
+DELIMITER //
+CREATE PROCEDURE ListarClientesETelefones()
+BEGIN
+    SELECT nome, telefone FROM cliente;
+END //
+DELIMITER ;
