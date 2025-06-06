@@ -1,6 +1,6 @@
-use bancodemo2
-GO
+use bancodemo2;
 
+GO
 CREATE PROCEDURE pesquisa
  @campoBusca VARCHAR(20) AS
  SELECT codigo ,descricao FROM tabela

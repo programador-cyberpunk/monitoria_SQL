@@ -153,3 +153,78 @@ DELIMITER //
                  CALL ClienteDominioEmal('@gmail');
                  END //
                  DELiMITER ;
+                 
+				-- 14 crie uma procedure que que liste discos e artistas
+                DELIMITER //
+                 CREATE PROCEDURE ListarDiscosArtista()
+                  BEGIN
+                   SELECT d.*, c.artista FROM disco d
+                   JOIN catalogo c ON d.id_catalogo = c.id;
+                   CALL ListarDiscosArtista('Nevermind', 'Nirvana');
+                   END //
+                   DELIMITER ;
+                   
+				-- 15 crie um procedimento que busque um disco por titulo
+                DELIMITER //
+                CREATE PROCEDURE BuscaDiscoTitulo(
+                 IN p_titulo VARCHAR(200) )
+                  BEGIN
+                  SELECT * FROM catalogo WHERE titulo = p_titulo;
+                  CALL BuscaDiscoTitulo();
+                  END //
+                  DELIMITER ;
+                  
+                  -- 16 crie um procedimento que atualize o genero do disco
+                  DELIMITER //
+                  CREATE PROCEDURE MudaGenero(
+                   IN p_id_disco INT, IN p_novo_genero VARCHAR(200) )
+                   BEGIN
+                    UPDATE catalogo SET genero = p_novo_genero;
+                    CALL MudaGenero();
+                    END //
+                    DELIMITER ;
+                    
+                 -- 17 crie um procedimento que liste discos por artistas e genero  
+                    DELIMITER //
+                    CREATE PROCEDURE ListaDiscosArtistaGenero(
+                     IN p_artista VARCHAR(200),
+                     IN p_genero VARCHAR(200)
+                    )
+                    BEGIN
+                     SELECT * FROM disco d
+                     JOIN catalogo c ON d.id_catalogo = c.id 
+                     WHERE c.artista = p_artista AND c.genero;
+                     CALL ListaDiscosArtistaGenero();
+                     END //
+                     DELIMITER ;
+                     
+                   -- 18 crie um procedimento que conte discos por artista
+                   DELIMITER //
+                   CREATE PROCEDURE ContaDiscoPorArtista()
+                    BEGIN
+                     SELECT c.artista, COUNT(d.id) AS total_discos 
+                     FROM catalogo c LEFT JOIN disco d ON c.id = d.id_catalogo
+                     GROUP BY c.artista;
+                     CALL ContaDiscoPorArtista();
+                     END //
+                     DELIMITER ;
+                     
+                     -- 19 crie um procedimento que busque o funcionaio por nome
+                     DELIMITER //
+                      CREATE PROCEDURE BuscaFuncionarioNome(
+                       IN p_nome VACHAR(200)
+                      )
+                       BEGIN
+                        SELECT * FROM funcionario WHERE nome LIKE CONCAT('%', p_nome, '%');
+                        CALL BuscaNomeFuncionario();
+                        END //
+                        DELIMITER ;
+                        
+                      -- 20  crie um procedimento que liste clientes e seus telefones
+                       DELIMITER //
+                       CREATE PROCEDURE ListaClienteTelefone()
+                        BEGIN
+                         SELECT nome, telefone FROM cliente;
+                         CALL ListaClienteTelefone();
+                         END //
+                         DELIMITER ;
